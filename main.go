@@ -5,7 +5,9 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/sankalpmukim/url-shortener-go/middleware"
+	"github.com/sankalpmukim/url-shortener-go/routes"
 )
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +22,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Get("/", handleIndex)
+	r.Use(chimiddleware.Logger)
+	r.Mount("/auth", routes.Auth)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.Authenticated)
+		r.Get("/", handleIndex)
+	})
 	http.ListenAndServe(":3000", r)
 }
