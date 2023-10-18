@@ -9,9 +9,9 @@ var Auth *chi.Mux
 
 func init() {
 	Auth = chi.NewRouter()
-	Auth.Get("/login", handlers.HandleLogin)
-	Auth.Post("/login", handlers.HandleLoginPost)
-	Auth.Get("/signup", handlers.HandleSignup)
-	Auth.Post("/signup", handlers.HandleSignupPost)
-	Auth.Get("/logout", handlers.HandleLogout)
+	Auth.Get("/login", handlers.GetLogin)
+	Auth.Post("/login", handlers.PostLogin)
+	Auth.Get("/signup", handlers.GetSignup)
+	Auth.Post("/signup", handlers.PostSignup)
+	Auth.Get("/logout", handlers.GetLogout)
 }
