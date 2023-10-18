@@ -35,8 +35,18 @@ func GetFlash(w http.ResponseWriter, r *http.Request, name string) ([]byte, erro
 	if err != nil {
 		return nil, err
 	}
+
 	// clearning the cookie
-	dc := &http.Cookie{Name: name, MaxAge: -1, Expires: time.Unix(1, 0)}
+	dc := &http.Cookie{
+		Name:     name,
+		MaxAge:   -1,
+		Expires:  time.Unix(1, 0),
+		Path:     "/",                      // makes sure it's available for the whole domain
+		Domain:   "",                       // leave it empty to default to the domain of the calling script
+		Secure:   false,                    // true if you only want to send the cookie over HTTPS
+		HttpOnly: true,                     // true if you want to prevent JavaScript access to the cookie
+		SameSite: http.SameSiteDefaultMode, // or http.SameSiteLaxMode, http.SameSiteStrictMode, http.SameSiteNoneMode
+	}
 	http.SetCookie(w, dc)
 	return value, nil
 }

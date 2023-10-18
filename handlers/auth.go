@@ -3,6 +3,7 @@ package handlers
 import (
 	"html/template"
 	"net/http"
+	"time"
 
 	"github.com/sankalpmukim/url-shortener-go/controllers"
 	"github.com/sankalpmukim/url-shortener-go/flash"
@@ -19,7 +20,7 @@ func GetLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Write([]byte("Error"))
 	}
-	tmpl.Execute(w, flashes)
+	tmpl.Execute(w, string(flashes))
 }
 
 // POST /login
@@ -80,5 +81,28 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 
 // GET /logout
 func GetLogout(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Logout"))
+	flashes, err := flash.GetFlash(w, r, "error")
+	if err != nil {
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return
+	}
+	tmpl, err := template.ParseFiles("templates/auth/logout.html")
+	if err != nil {
+		w.Write([]byte("Error"))
+	}
+	// clear "auth" cookie
+	dc := &http.Cookie{
+		Name:     "auth",
+		MaxAge:   -1,
+		Expires:  time.Unix(1, 0),
+		Path:     "/",                      // makes sure it's available for the whole domain
+		Domain:   "",                       // leave it empty to default to the domain of the calling script
+		Secure:   false,                    // true if you only want to send the cookie over HTTPS
+		HttpOnly: true,                     // true if you want to prevent JavaScript access to the cookie
+		SameSite: http.SameSiteDefaultMode, // or http.SameSiteLaxMode, http.SameSiteStrictMode, http.SameSiteNoneMode
+	}
+
+	// set the cookie
+	http.SetCookie(w, dc)
+	tmpl.Execute(w, string(flashes))
 }
