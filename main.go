@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -38,9 +36,10 @@ func main() {
 		r.Get("/", handleIndex)
 	})
 
-	PORT := os.Getenv("PORT")
-	if PORT == "" {
-		PORT = "3000"
-	}
-	http.ListenAndServe(fmt.Sprintf(":%s", PORT), r)
+	// PORT := os.Getenv("PORT")
+	// if PORT == "" {
+	// 	PORT = "3000"
+	// }
+	logs.Info("Starting server on port 3000")
+	http.ListenAndServe(":3000", r)
 }

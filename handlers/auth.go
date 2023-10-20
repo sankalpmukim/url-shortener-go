@@ -72,7 +72,16 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 // GET /signup
 func GetSignup(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Signup"))
+	flashes, err := cookies.GetFlash(w, r, "error")
+	if err != nil {
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return
+	}
+	tmpl, err := template.ParseFiles("templates/auth/signup.html")
+	if err != nil {
+		w.Write([]byte("Error"))
+	}
+	tmpl.Execute(w, string(flashes))
 }
 
 // POST /signup
