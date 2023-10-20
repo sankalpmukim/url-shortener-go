@@ -6,8 +6,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	"github.com/joho/godotenv"
 
+	i "github.com/sankalpmukim/url-shortener-go/init"
+	"github.com/sankalpmukim/url-shortener-go/logs"
 	"github.com/sankalpmukim/url-shortener-go/middleware"
 	"github.com/sankalpmukim/url-shortener-go/routes"
 )
@@ -22,7 +23,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	initializeEnv()
+	if err := i.InitAll(); err != nil {
+		logs.Error("Error occured during initialization", err)
+		panic(err)
+	}
+
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
 	r.Mount("/auth", routes.Auth)
@@ -31,11 +36,4 @@ func main() {
 		r.Get("/", handleIndex)
 	})
 	http.ListenAndServe(":3000", r)
-}
-
-func initializeEnv() {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
 }
