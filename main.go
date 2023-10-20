@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -35,5 +37,10 @@ func main() {
 		r.Use(middleware.Authenticated)
 		r.Get("/", handleIndex)
 	})
-	http.ListenAndServe(":3000", r)
+
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "3000"
+	}
+	http.ListenAndServe(fmt.Sprintf(":%s", PORT), r)
 }
