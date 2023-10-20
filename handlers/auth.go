@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/sankalpmukim/url-shortener-go/controllers"
-	"github.com/sankalpmukim/url-shortener-go/flash"
+	"github.com/sankalpmukim/url-shortener-go/cookies"
 )
 
 // GET /login
 func GetLogin(w http.ResponseWriter, r *http.Request) {
-	flashes, err := flash.GetFlash(w, r, "error")
+	flashes, err := cookies.GetFlash(w, r, "error")
 	if err != nil {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
@@ -42,7 +42,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	if !isValid {
 		// flash error message
-		flash.SetFlash(w, "error", []byte("Invalid credentials"))
+		cookies.SetFlash(w, "error", []byte("Invalid credentials"))
 
 		// redirect the user to the login page
 		http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
@@ -51,16 +51,17 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 	encodedPayload := controllers.CreateSecretPayload(email)
 
 	// create a new cookie
-	cookie := http.Cookie{
-		Name:     "auth",
-		Value:    encodedPayload,
-		Path:     "/",                      // makes sure it's available for the whole domain
-		Domain:   "",                       // leave it empty to default to the domain of the calling script
-		MaxAge:   3600,                     // 1 hour in seconds, 0 means no 'Max-Age' attribute set. If negative, delete cookie now.
-		Secure:   false,                    // true if you only want to send the cookie over HTTPS
-		HttpOnly: true,                     // true if you want to prevent JavaScript access to the cookie
-		SameSite: http.SameSiteDefaultMode, // or http.SameSiteLaxMode, http.SameSiteStrictMode, http.SameSiteNoneMode
-	}
+	// cookie := http.Cookie{
+	// 	Name:     "auth",
+	// 	Value:    encodedPayload,
+	// 	Path:     "/",                      // makes sure it's available for the whole domain
+	// 	Domain:   "",                       // leave it empty to default to the domain of the calling script
+	// 	MaxAge:   3600,                     // 1 hour in seconds, 0 means no 'Max-Age' attribute set. If negative, delete cookie now.
+	// 	Secure:   false,                    // true if you only want to send the cookie over HTTPS
+	// 	HttpOnly: true,                     // true if you want to prevent JavaScript access to the cookie
+	// 	SameSite: http.SameSiteDefaultMode, // or http.SameSiteLaxMode, http.SameSiteStrictMode, http.SameSiteNoneMode
+	// }
+	cookie := cookies.CreateCookie("auth", encodedPayload)
 
 	// set the cookie
 	http.SetCookie(w, &cookie)
@@ -81,7 +82,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 
 // GET /logout
 func GetLogout(w http.ResponseWriter, r *http.Request) {
-	flashes, err := flash.GetFlash(w, r, "error")
+	flashes, err := cookies.GetFlash(w, r, "error")
 	if err != nil {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
