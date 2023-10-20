@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
-	i "github.com/sankalpmukim/url-shortener-go/init"
+	i "github.com/sankalpmukim/url-shortener-go/initialize"
 	"github.com/sankalpmukim/url-shortener-go/logs"
 	"github.com/sankalpmukim/url-shortener-go/middleware"
 	"github.com/sankalpmukim/url-shortener-go/routes"
