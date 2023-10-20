@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -28,6 +30,8 @@ func main() {
 		panic(err)
 	}
 
+	fmt.Printf("DEBUG = %v\n", os.Getenv("DEBUG"))
+
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
 	r.Mount("/auth", routes.Auth)
@@ -36,10 +40,10 @@ func main() {
 		r.Get("/", handleIndex)
 	})
 
-	// PORT := os.Getenv("PORT")
-	// if PORT == "" {
-	// 	PORT = "3000"
-	// }
-	logs.Info("Starting server on port 3000")
-	http.ListenAndServe(":3000", r)
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "3000"
+	}
+	logs.Info("Starting server on port " + PORT)
+	http.ListenAndServe(":"+PORT, r)
 }
