@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
 
 func Authenticated(next http.Handler) http.Handler {
@@ -10,7 +11,7 @@ func Authenticated(next http.Handler) http.Handler {
 		_, err := r.Cookie("auth")
 		if err != nil {
 			// log the error
-			fmt.Println(err)
+			logs.Warn("Redirecting because:", err)
 
 			http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
 			return

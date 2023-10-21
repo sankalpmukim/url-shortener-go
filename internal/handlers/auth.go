@@ -4,9 +4,9 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/sankalpmukim/url-shortener-go/controllers"
-	"github.com/sankalpmukim/url-shortener-go/cookies"
-	"github.com/sankalpmukim/url-shortener-go/logs"
+	"github.com/sankalpmukim/url-shortener-go/internal/controllers"
+	"github.com/sankalpmukim/url-shortener-go/internal/cookies"
+	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
 
 // GET /login
@@ -16,7 +16,7 @@ func GetLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.ParseFiles("templates/auth/login.html")
+	tmpl, err := template.ParseFiles("pkg/templates/auth/login.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}
@@ -67,7 +67,7 @@ func GetSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.ParseFiles("templates/auth/signup.html")
+	tmpl, err := template.ParseFiles("pkg/templates/auth/signup.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}
@@ -129,7 +129,7 @@ func GetLogout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.ParseFiles("templates/auth/logout.html")
+	tmpl, err := template.ParseFiles("pkg/templates/auth/logout.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}

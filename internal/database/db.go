@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/sankalpmukim/url-shortener-go/logs"
+	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 
 	_ "github.com/lib/pq" // Driver for Postgres
 )

@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/sankalpmukim/url-shortener-go/handlers"
+	"github.com/sankalpmukim/url-shortener-go/internal/handlers"
 )
 
 var Auth *chi.Mux

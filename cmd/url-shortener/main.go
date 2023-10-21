@@ -9,15 +9,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
-	i "github.com/sankalpmukim/url-shortener-go/initialize"
-	"github.com/sankalpmukim/url-shortener-go/logs"
-	"github.com/sankalpmukim/url-shortener-go/middleware"
-	"github.com/sankalpmukim/url-shortener-go/routes"
+	i "github.com/sankalpmukim/url-shortener-go/internal/initialize"
+	"github.com/sankalpmukim/url-shortener-go/internal/middleware"
+	"github.com/sankalpmukim/url-shortener-go/internal/routes"
+	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	// w.Write([]byte("Hello World!"))
-	tmpl, err := template.ParseFiles("templates/index.html")
+	tmpl, err := template.ParseFiles("pkg/templates/index.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}

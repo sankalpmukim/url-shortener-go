@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/sankalpmukim/url-shortener-go/database"
+	"github.com/sankalpmukim/url-shortener-go/internal/database"
 )
 
 func CheckUserCredentials(email string, password string) bool {

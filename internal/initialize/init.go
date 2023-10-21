@@ -2,8 +2,8 @@ package initialize
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/sankalpmukim/url-shortener-go/database"
-	"github.com/sankalpmukim/url-shortener-go/logs"
+	"github.com/sankalpmukim/url-shortener-go/internal/database"
+	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
 
 func InitAll() error {
