@@ -3,10 +3,10 @@ package handlers
 import (
 	"html/template"
 	"net/http"
-	"time"
 
 	"github.com/sankalpmukim/url-shortener-go/controllers"
 	"github.com/sankalpmukim/url-shortener-go/cookies"
+	"github.com/sankalpmukim/url-shortener-go/logs"
 )
 
 // GET /login
@@ -51,16 +51,6 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 	encodedPayload := controllers.CreateSecretPayload(email)
 
 	// create a new cookie
-	// cookie := http.Cookie{
-	// 	Name:     "auth",
-	// 	Value:    encodedPayload,
-	// 	Path:     "/",                      // makes sure it's available for the whole domain
-	// 	Domain:   "",                       // leave it empty to default to the domain of the calling script
-	// 	MaxAge:   3600,                     // 1 hour in seconds, 0 means no 'Max-Age' attribute set. If negative, delete cookie now.
-	// 	Secure:   false,                    // true if you only want to send the cookie over HTTPS
-	// 	HttpOnly: true,                     // true if you want to prevent JavaScript access to the cookie
-	// 	SameSite: http.SameSiteDefaultMode, // or http.SameSiteLaxMode, http.SameSiteStrictMode, http.SameSiteNoneMode
-	// }
 	cookie := cookies.CreateCookie("auth", encodedPayload)
 
 	// set the cookie
@@ -86,7 +76,50 @@ func GetSignup(w http.ResponseWriter, r *http.Request) {
 
 // POST /signup
 func PostSignup(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Signup Post"))
+	if err := r.ParseForm(); err != nil {
+		logs.Error("Failed to parse form", err)
+		http.Error(w, "Failed to parse form", http.StatusInternalServerError)
+		return
+	}
+
+	// Read values from the form data
+	fullName := r.FormValue("full_name")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	confirmPassword := r.FormValue("confirm_password")
+
+	// check if password and confirm password match
+	if password != confirmPassword {
+		// flash error message
+		cookies.SetFlash(w, "error", []byte("Passwords do not match"))
+
+		// redirect the user to the signup page
+		http.Redirect(w, r, "/auth/signup", http.StatusSeeOther)
+		return
+	}
+
+	// check if the email already exists
+	if controllers.CheckIfEmailExists(email) {
+		// flash error message
+		cookies.SetFlash(w, "error", []byte("Email already exists"))
+
+		// redirect the user to the signup page
+		http.Redirect(w, r, "/auth/signup", http.StatusSeeOther)
+		return
+	}
+
+	// create a user
+	_, err := controllers.CreateUser(fullName, email, password)
+
+	if err != nil {
+		logs.Error("Failed to create user", err)
+		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		return
+	}
+
+	// redirect to the login page, with flash message
+	cookies.SetFlash(w, "error", []byte("User created successfully"))
+	http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
 }
 
 // GET /logout
@@ -101,16 +134,7 @@ func GetLogout(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Error"))
 	}
 	// clear "auth" cookie
-	dc := &http.Cookie{
-		Name:     "auth",
-		MaxAge:   -1,
-		Expires:  time.Unix(1, 0),
-		Path:     "/",                      // makes sure it's available for the whole domain
-		Domain:   "",                       // leave it empty to default to the domain of the calling script
-		Secure:   false,                    // true if you only want to send the cookie over HTTPS
-		HttpOnly: true,                     // true if you want to prevent JavaScript access to the cookie
-		SameSite: http.SameSiteDefaultMode, // or http.SameSiteLaxMode, http.SameSiteStrictMode, http.SameSiteNoneMode
-	}
+	dc := cookies.DeleteCookieCookie("auth")
 
 	// set the cookie
 	http.SetCookie(w, dc)

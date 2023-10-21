@@ -30,8 +30,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("DEBUG = %v\n", os.Getenv("DEBUG"))
-
+	DEBUG := os.Getenv("DEBUG")
+	if DEBUG != "true" {
+		fmt.Printf("DEBUG = %v\n", DEBUG)
+	}
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
 	r.Mount("/auth", routes.Auth)
