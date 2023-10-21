@@ -30,18 +30,31 @@ func main() {
 		panic(err)
 	}
 
+	// Get the value of the DEBUG environment variable
 	DEBUG := os.Getenv("DEBUG")
 	if DEBUG != "true" {
+		// cannot use logs package here because it
+		// doesn't print to the console.
 		fmt.Printf("DEBUG = %v\n", DEBUG)
 	}
+
+	// Create a new base router
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
 	r.Mount("/auth", routes.Auth)
+
+	// Debug only routes
+	if DEBUG == "true" {
+		r.Mount("/users", routes.Users)
+	}
+
+	// Auth Protected routes
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.Authenticated)
 		r.Get("/", handleIndex)
 	})
 
+	// Listen on port 3000
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "3000"

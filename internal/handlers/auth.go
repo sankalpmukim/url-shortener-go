@@ -6,6 +6,8 @@ import (
 
 	"github.com/sankalpmukim/url-shortener-go/internal/controllers"
 	"github.com/sankalpmukim/url-shortener-go/internal/cookies"
+	"github.com/sankalpmukim/url-shortener-go/internal/database"
+	"github.com/sankalpmukim/url-shortener-go/internal/lib"
 	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
 
@@ -99,7 +101,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the email already exists
-	if controllers.CheckIfEmailExists(email) {
+	if database.DB.UserExists(email) {
 		// flash error message
 		cookies.SetFlash(w, "error", []byte("Email already exists"))
 
@@ -109,7 +111,11 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// create a user
-	_, err := controllers.CreateUser(fullName, email, password)
+	err := database.DB.CreateUser(database.CreateUser{
+		FullName: fullName,
+		Email:    email,
+		Password: lib.ComputeSHA512(password),
+	})
 
 	if err != nil {
 		logs.Error("Failed to create user", err)
