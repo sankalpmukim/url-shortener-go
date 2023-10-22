@@ -8,11 +8,7 @@
 <body>
   <h1>Signup</h1>
   <!-- check if . exists -->
-  {{ if . }}
-  {{ . }}
-  <br />
-  <br />
-  {{ end }}
+  {{template "flash" .}}
   <form method="POST">
     <label for="full_name">Full Name:</label>
     <input type="name" id="full_name" name="full_name" required />
@@ -32,6 +28,8 @@
     <br />
     <input type="submit" value="Signup" />
   </form>
+  <br />
+  <a href="/auth/login">Login</a>
 </body>
 
 </html>

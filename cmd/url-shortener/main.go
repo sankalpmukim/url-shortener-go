@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"os"
 
@@ -10,6 +9,7 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
 	i "github.com/sankalpmukim/url-shortener-go/internal/initialize"
+	"github.com/sankalpmukim/url-shortener-go/internal/lib"
 	"github.com/sankalpmukim/url-shortener-go/internal/middleware"
 	"github.com/sankalpmukim/url-shortener-go/internal/routes"
 	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
@@ -17,7 +17,7 @@ import (
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	// w.Write([]byte("Hello World!"))
-	tmpl, err := template.ParseFiles("pkg/templates/index.html")
+	tmpl, err := lib.TemplatesWithFlash("pkg/templates/index.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}

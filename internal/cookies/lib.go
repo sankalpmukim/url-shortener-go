@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
 
 func SetFlash(w http.ResponseWriter, name string, value []byte) {
@@ -75,6 +77,28 @@ func SplitByCommas(s string) []string {
 	return strings.Split(s, ",")
 }
 
+// split multiple statements by ";"
+func CreateOrAppendFlash(w http.ResponseWriter, r *http.Request, name, value string) {
+	// get cookie using GetFlash
+	oldFlash, err := GetFlash(w, r, name)
+	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return
+	}
+
+	flash := string(oldFlash)
+
+	// create the string
+	if flash != "" {
+		flash += ";"
+	}
+	flash += value
+
+	// set the cookie
+	SetFlash(w, name, []byte(flash))
+}
+
 func encode(src []byte) string {
 	return base64.URLEncoding.EncodeToString(src)
 }
@@ -82,3 +106,52 @@ func encode(src []byte) string {
 func decode(src string) ([]byte, error) {
 	return base64.URLEncoding.DecodeString(src)
 }
+
+type FlashInfo struct {
+	Success []string
+	Info    []string
+	Error   []string
+}
+
+func GetFlashInfo(w http.ResponseWriter, r *http.Request) (FlashInfo, error) {
+	successBytes, err := GetFlash(w, r, SUCCESS)
+	if err != nil {
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return FlashInfo{}, err
+	}
+	errorBytes, err := GetFlash(w, r, ERROR)
+	if err != nil {
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return FlashInfo{}, err
+	}
+	infoBytes, err := GetFlash(w, r, INFO)
+	if err != nil {
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return FlashInfo{}, err
+	}
+	success := strings.Split(string(successBytes), ";")
+	errors := strings.Split(string(errorBytes), ";")
+	info := strings.Split(string(infoBytes), ";")
+	return FlashInfo{
+		Success: cleanString(success),
+		Error:   cleanString(errors),
+		Info:    cleanString(info),
+	}, nil
+}
+
+// trim spaces and newlines
+// remove empty strings
+func cleanString(val []string) []string {
+	var res []string
+	for _, v := range val {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+var SUCCESS = "success"
+var INFO = "info"
+var ERROR = "error"

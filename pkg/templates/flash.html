@@ -1,0 +1,35 @@
+{{define "flash"}}
+{{if .Success}}
+<div>
+  <h4>Success</h4>
+  <ul>
+    {{range .Success}}
+    <li class="flash">{{.}}</li>
+    {{end}}
+  </ul>
+</div>
+<br />
+{{end}}
+{{if .Error}}
+<div>
+  <h4>Error</h4>
+  <ul>
+    {{range .Error}}
+    <li class="flash">{{.}}</li>
+    {{end}}
+  </ul>
+</div>
+<br />
+{{end}}
+{{if .Info}}
+<div>
+  <h4>Info</h4>
+  <ul>
+    {{range .Info}}
+    <li class="flash">{{.}}</li>
+    {{end}}
+  </ul>
+</div>
+<br />
+{{end}}
+{{end}}

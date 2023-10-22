@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/sankalpmukim/url-shortener-go/internal/controllers"
@@ -13,16 +12,18 @@ import (
 
 // GET /login
 func GetLogin(w http.ResponseWriter, r *http.Request) {
-	flashes, err := cookies.GetFlash(w, r, "error")
+	flashInfo, err := cookies.GetFlashInfo(w, r)
 	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.ParseFiles("pkg/templates/auth/login.html")
+	tmpl, err := lib.TemplatesWithFlash("pkg/templates/auth/login.html")
 	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
 		w.Write([]byte("Error"))
 	}
-	tmpl.Execute(w, string(flashes))
+	tmpl.Execute(w, flashInfo)
 }
 
 // POST /login
@@ -44,7 +45,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	if !isValid {
 		// flash error message
-		cookies.SetFlash(w, "error", []byte("Invalid credentials"))
+		cookies.CreateOrAppendFlash(w, r, cookies.ERROR, "Invalid credentials")
 
 		// redirect the user to the login page
 		http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
@@ -64,16 +65,18 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 // GET /signup
 func GetSignup(w http.ResponseWriter, r *http.Request) {
-	flashes, err := cookies.GetFlash(w, r, "error")
+	flashInfo, err := cookies.GetFlashInfo(w, r)
 	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.ParseFiles("pkg/templates/auth/signup.html")
+	tmpl, err := lib.TemplatesWithFlash("pkg/templates/auth/signup.html")
 	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
 		w.Write([]byte("Error"))
 	}
-	tmpl.Execute(w, string(flashes))
+	tmpl.Execute(w, flashInfo)
 }
 
 // POST /signup
@@ -93,7 +96,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	// check if password and confirm password match
 	if password != confirmPassword {
 		// flash error message
-		cookies.SetFlash(w, "error", []byte("Passwords do not match"))
+		cookies.CreateOrAppendFlash(w, r, cookies.ERROR, "Passwords do not match")
 
 		// redirect the user to the signup page
 		http.Redirect(w, r, "/auth/signup", http.StatusSeeOther)
@@ -103,7 +106,7 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	// check if the email already exists
 	if database.DB.UserExists(email) {
 		// flash error message
-		cookies.SetFlash(w, "error", []byte("Email already exists"))
+		cookies.CreateOrAppendFlash(w, r, cookies.ERROR, "Email already exists")
 
 		// redirect the user to the signup page
 		http.Redirect(w, r, "/auth/signup", http.StatusSeeOther)
@@ -124,18 +127,19 @@ func PostSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// redirect to the login page, with flash message
-	cookies.SetFlash(w, "error", []byte("User created successfully"))
+	cookies.CreateOrAppendFlash(w, r, cookies.SUCCESS, "User created successfully")
 	http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
 }
 
 // GET /logout
 func GetLogout(w http.ResponseWriter, r *http.Request) {
-	flashes, err := cookies.GetFlash(w, r, "error")
+	flashInfo, err := cookies.GetFlashInfo(w, r)
 	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.ParseFiles("pkg/templates/auth/logout.html")
+	tmpl, err := lib.TemplatesWithFlash("pkg/templates/auth/logout.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}
@@ -144,5 +148,5 @@ func GetLogout(w http.ResponseWriter, r *http.Request) {
 
 	// set the cookie
 	http.SetCookie(w, dc)
-	tmpl.Execute(w, string(flashes))
+	tmpl.Execute(w, flashInfo)
 }
