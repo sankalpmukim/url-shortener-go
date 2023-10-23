@@ -40,6 +40,12 @@ func Initialize() error {
 		errorLogger.SetOutput(os.Stdout)
 
 	} else {
+		// change prefix
+		infoLogger.SetPrefix("[INFO]: ")
+		warnLogger.SetPrefix("[WARN]: ")
+		errorLogger.SetPrefix("[ERROR]: ")
+
+		// set log flags
 		infoLogger.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 		warnLogger.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 		errorLogger.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
@@ -47,14 +53,17 @@ func Initialize() error {
 		// create log files if not exists "logs/info.log", "logs/warn.log", "logs/error.log"
 		infoLogFile, err := os.OpenFile("logs/info.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
+			fmt.Println("Error creating info.log file")
 			return err
 		}
 		warnLogFile, err := os.OpenFile("logs/warn.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
+			fmt.Println("Error creating warn.log file")
 			return err
 		}
 		errorLogFile, err := os.OpenFile("logs/error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
+			fmt.Println("Error creating error.log file")
 			return err
 		}
 
