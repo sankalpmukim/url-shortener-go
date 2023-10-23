@@ -51,13 +51,14 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
 		return
 	}
-	encodedPayload := controllers.CreateSecretPayload(email)
+	encodedPayload := controllers.CreateEncodedPayload(email)
 
 	// create a new cookie
 	cookie := cookies.CreateCookie("auth", encodedPayload)
 
 	// set the cookie
 	http.SetCookie(w, &cookie)
+	cookies.CreateOrAppendFlash(w, r, cookies.SUCCESS, "Login successful")
 
 	// redirect the user to the homepage
 	http.Redirect(w, r, "/", http.StatusSeeOther)

@@ -21,17 +21,9 @@ const (
 	White  = "\033[37m"
 )
 
-func Info(v ...interface{}) {
-	infoLogger.Println(v...)
-}
-
-func Warn(v ...interface{}) {
-	warnLogger.Println(v...)
-}
-
-func Error(v ...interface{}) {
-	errorLogger.Println(v...)
-}
+var Info func(v ...interface{})
+var Warn func(v ...interface{})
+var Error func(v ...interface{})
 
 func Initialize() error {
 	infoLogger = log.New(log.Writer(), fmt.Sprintf("%s[INFO]%s: ", Green, Reset), log.Ldate|log.Ltime|log.Lshortfile)
@@ -41,7 +33,7 @@ func Initialize() error {
 	if os.Getenv("DEBUG") == "true" {
 		infoLogger.SetFlags(log.Ltime)
 		warnLogger.SetFlags(log.Ltime)
-		errorLogger.SetFlags(log.Ltime)
+		errorLogger.SetFlags(log.Ltime | log.Lshortfile)
 		// set log output to os.Stdout
 		infoLogger.SetOutput(os.Stdout)
 		warnLogger.SetOutput(os.Stdout)
@@ -71,6 +63,10 @@ func Initialize() error {
 		warnLogger.SetOutput(warnLogFile)
 		errorLogger.SetOutput(errorLogFile)
 	}
+
+	Info = infoLogger.Println
+	Warn = warnLogger.Println
+	Error = errorLogger.Println
 
 	infoLogger.Println("Initialized loggers")
 	return nil

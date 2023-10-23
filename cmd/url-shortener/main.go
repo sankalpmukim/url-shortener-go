@@ -52,6 +52,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.Authenticated)
 		r.Get("/", handleIndex)
+		r.Mount("/links", routes.Links)
 	})
 
 	// Listen on port 3000
