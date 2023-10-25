@@ -6,7 +6,9 @@ import (
 )
 
 func FlashTemplates(filenames ...string) (*template.Template, error) {
-	return template.ParseFiles(append(filenames, "pkg/templates/flash.html")...)
+	return template.ParseFiles(append(filenames,
+		"pkg/templates/templates/flash.html",
+		"pkg/templates/templates/nav.html")...)
 }
 
 func TrimProtocol(url string) string {

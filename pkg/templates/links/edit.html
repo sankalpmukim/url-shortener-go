@@ -6,15 +6,9 @@
 </head>
 
 <body>
+  {{template "nav" }}
   {{template "flash" .FlashInfo}}
 
-  <header>
-    <h3>Nav</h3>
-  </header>
-  <ul>
-    <li><a href="/auth/logout">Logout</a></li>
-    <li><a href="/create">Create Link</a></li>
-  </ul>
   <form method="post">
     <label for="endpoint">Endpoint</label>
     <input type="text" id="endpoint" name="endpoint" value="{{.Link.Endpoint}}" />
