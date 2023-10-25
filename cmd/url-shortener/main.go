@@ -9,20 +9,10 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
 	i "github.com/sankalpmukim/url-shortener-go/internal/initialize"
-	"github.com/sankalpmukim/url-shortener-go/internal/lib"
 	"github.com/sankalpmukim/url-shortener-go/internal/middleware"
 	"github.com/sankalpmukim/url-shortener-go/internal/routes"
 	"github.com/sankalpmukim/url-shortener-go/pkg/logs"
 )
-
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	// w.Write([]byte("Hello World!"))
-	tmpl, err := lib.TemplatesWithFlash("pkg/templates/index.html")
-	if err != nil {
-		w.Write([]byte("Error"))
-	}
-	tmpl.Execute(w, "Hello from code")
-}
 
 func main() {
 	if err := i.InitAll(); err != nil {
@@ -51,8 +41,7 @@ func main() {
 	// Auth Protected routes
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.Authenticated)
-		r.Get("/", handleIndex)
-		r.Mount("/links", routes.Links)
+		r.Mount("/", routes.Links)
 	})
 
 	// Listen on port 3000

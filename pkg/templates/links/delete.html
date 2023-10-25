@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Home page</title>
+</head>
+
+<body>
+  {{template "flash" .FlashInfo}}
+
+  <header>
+    <h3>Nav</h3>
+  </header>
+  <ul>
+    <li><a href="/auth/logout">Logout</a></li>
+    <li><a href="/create">Create Link</a></li>
+  </ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Short Link</th>
+        <th>Link</th>
+        <th>Clicks</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Links}}
+      <tr>
+        <td>{{.Endpoint}}</td>
+        <td>{{.Target}}</td>
+        <td>{{.Clicks}}</td>
+        <td>
+          <a href="/{{.Endpoint}}/edit">Edit</a>
+          <a href="/{{.Endpoint}}/delete">Delete</a>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</body>
+
+</html>

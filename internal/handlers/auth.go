@@ -18,7 +18,7 @@ func GetLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := lib.TemplatesWithFlash("pkg/templates/auth/login.html")
+	tmpl, err := lib.FlashTemplates("pkg/templates/auth/login.html")
 	if err != nil {
 		logs.Error("Failed to parse form(flash cookie)", err)
 		w.Write([]byte("Error"))
@@ -72,7 +72,7 @@ func GetSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := lib.TemplatesWithFlash("pkg/templates/auth/signup.html")
+	tmpl, err := lib.FlashTemplates("pkg/templates/auth/signup.html")
 	if err != nil {
 		logs.Error("Failed to parse form(flash cookie)", err)
 		w.Write([]byte("Error"))
@@ -140,7 +140,7 @@ func GetLogout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := lib.TemplatesWithFlash("pkg/templates/auth/logout.html")
+	tmpl, err := lib.FlashTemplates("pkg/templates/auth/logout.html")
 	if err != nil {
 		w.Write([]byte("Error"))
 	}

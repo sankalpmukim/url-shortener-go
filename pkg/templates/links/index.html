@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Home page</title>
+  <style>
+    /* Add borders to the table itself */
+    table {
+      border-collapse: collapse;
+      /* Collapses adjacent borders into one */
+      width: 100%;
+      /* Optional: Use 100% width */
+      border: 1px solid black;
+      /* Add a border to the table itself */
+    }
+
+    /* Add borders to the table cells (td) and header cells (th) */
+    th,
+    td {
+      border: 1px solid black;
+      /* Add borders to cells */
+      padding: 8px;
+      /* Add some padding for better appearance */
+      text-align: left;
+      /* Align text to the left, can be adjusted as per requirement */
+    }
+
+    /* Add borders to the table rows (optional) */
+    tr {
+      border: 1px solid black;
+      /* This can be removed if you only want cell borders */
+    }
+  </style>
+</head>
+
+<body>
+  {{template "flash" .FlashInfo}}
+
+  <header>
+    <h3>Nav</h3>
+  </header>
+  <ul>
+    <li><a href="/auth/logout">Logout</a></li>
+    <li><a href="/create">Create Link</a></li>
+  </ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Short Link</th>
+        <th>Target</th>
+        <th>Clicks</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Links}}
+      <tr>
+        <td><a href="{{.Origin}}/{{.Endpoint}}">{{.CleanedEndpoint}}</a></td>
+        <td><a href="{{.Target}}">{{.CleanedTarget}}</a></td>
+        <td>{{.Clicks}}</td>
+        <td>
+          <a href="/{{.Endpoint}}/edit">Edit</a>
+          <a href="/{{.Endpoint}}/delete">Delete</a>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</body>
+
+</html>

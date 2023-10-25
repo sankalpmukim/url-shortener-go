@@ -6,11 +6,16 @@
 </head>
 
 <body>
-  {{template "flash" .}}
+  {{template "flash" .FlashInfo}}
 
+  <header>
+    <h3>Nav</h3>
+  </header>
   <ul>
     <li><a href="/auth/logout">Logout</a></li>
+    <li><a href="/create">Create Link</a></li>
   </ul>
+  <form></form>
 </body>
 
 </html>
