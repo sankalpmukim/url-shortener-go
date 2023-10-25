@@ -1,0 +1,19 @@
+[Unit]
+Description=My Go API using chi
+After=network.target
+
+[Service]
+User=azureuser
+Group=azureuser
+WorkingDirectory=/home/azureuser/code/url-shortener-go
+ExecStart=/home/azureuser/code/url-shortener-go/main
+Restart=always
+Environment=ENV_VAR1=value1 ENV_VAR2=value2
+
+# Optional security considerations:
+ProtectSystem=full
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
