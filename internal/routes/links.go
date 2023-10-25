@@ -10,4 +10,7 @@ var Links *chi.Mux
 func init() {
 	Links = chi.NewRouter()
 	Links.Get("/", handlers.GetLinks)
+	Links.Get("/{endpoint}", handlers.RedirectLink)
+	Links.Get("/{endpoint}/edit", handlers.GetEditLink)
+	Links.Post("/{endpoint}/edit", handlers.PostEditLink)
 }

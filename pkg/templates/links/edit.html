@@ -15,7 +15,15 @@
     <li><a href="/auth/logout">Logout</a></li>
     <li><a href="/create">Create Link</a></li>
   </ul>
-  <form></form>
+  <form method="post">
+    <label for="endpoint">Endpoint</label>
+    <input type="text" id="endpoint" name="endpoint" value="{{.Link.Endpoint}}" />
+    <br />
+    <label for="target">Target</label>
+    <input type="text" id="target" name="target" value="{{.Link.Target}}" />
+    <br />
+    <input type="submit" value="Submit" />
+  </form>
 </body>
 
 </html>
