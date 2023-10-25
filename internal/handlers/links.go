@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/sankalpmukim/url-shortener-go/internal/controllers"
 	"github.com/sankalpmukim/url-shortener-go/internal/cookies"
 	"github.com/sankalpmukim/url-shortener-go/internal/database"
 	"github.com/sankalpmukim/url-shortener-go/internal/lib"
@@ -70,7 +71,8 @@ func RedirectLink(w http.ResponseWriter, r *http.Request) {
 	link, err := database.DB.GetLinkByEndpoint(endpoint)
 	if err != nil {
 		logs.Error("Error getting link", err)
-		w.Write([]byte("Error"))
+		// return 404 if link not found
+		http.Error(w, "Link not found", http.StatusNotFound)
 		return
 	}
 	if link.Endpoint == "" {
@@ -149,6 +151,69 @@ func PostEditLink(w http.ResponseWriter, r *http.Request) {
 
 	// flash success message
 	cookies.CreateOrAppendFlash(w, r, cookies.SUCCESS, "Link updated successfully")
+
+	// redirect the user to the list links page
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func GetCreateLink(w http.ResponseWriter, r *http.Request) {
+	flashInfo, err := cookies.GetFlashInfo(w, r)
+	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
+		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
+		return
+	}
+	tmpl, err := lib.FlashTemplates("pkg/templates/links/create.html")
+	if err != nil {
+		logs.Error("Failed to parse form(flash cookie)", err)
+		w.Write([]byte("Error"))
+	}
+	tmpl.Execute(w, flashInfo)
+}
+
+func PostCreateLink(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		logs.Error("Failed to parse form", err)
+		http.Error(w, "Failed to parse form", http.StatusInternalServerError)
+		return
+	}
+
+	// Read values from the form data
+	endpoint := r.FormValue("endpoint")
+	target := r.FormValue("target")
+
+	// check if the endpoint already exists
+	if database.DB.LinkExists(endpoint) {
+		// flash error message
+		cookies.CreateOrAppendFlash(w, r, cookies.ERROR, "Endpoint already exists")
+
+		// redirect the user to the create link page
+		http.Redirect(w, r, "/links/create", http.StatusSeeOther)
+		return
+	}
+
+	email := controllers.GetMailFromContext(r)
+	user, err := database.DB.GetUserByEmail(email)
+	if err != nil {
+		logs.Error("Failed to get user", err)
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
+		return
+	}
+
+	// create a link
+	err = database.DB.CreateLink(database.CreateLink{
+		Endpoint:  endpoint,
+		Target:    target,
+		CreatedBy: user.ID,
+	})
+	if err != nil {
+		logs.Error("Failed to create link", err)
+		http.Error(w, "Failed to create link", http.StatusInternalServerError)
+		return
+	}
+
+	// flash success message
+	cookies.CreateOrAppendFlash(w, r, cookies.SUCCESS, "Link created successfully")
 
 	// redirect the user to the list links page
 	http.Redirect(w, r, "/", http.StatusSeeOther)

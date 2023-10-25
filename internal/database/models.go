@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID        string    `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"-"`
@@ -31,6 +31,7 @@ type Link struct {
 }
 
 type CreateLink struct {
-	Endpoint string `json:"endpoint"`
-	Target   string `json:"target"`
+	Endpoint  string `json:"endpoint"`
+	Target    string `json:"target"`
+	CreatedBy uuid.UUID
 }

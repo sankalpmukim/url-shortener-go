@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Home page</title>
+</head>
+
+<body>
+  {{template "nav" }}
+  {{template "flash" .}}
+
+  <form method="post">
+    <label for="endpoint">Endpoint</label>
+    <input type="text" id="endpoint" name="endpoint" value="" />
+    <br />
+    <label for="target">Target</label>
+    <input type="text" id="target" name="target" value="" />
+    <br />
+    <input type="submit" value="Submit" />
+  </form>
+</body>
+
+</html>

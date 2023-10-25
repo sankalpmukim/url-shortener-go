@@ -12,6 +12,7 @@ type DBInterface interface {
 	GetLinkByEndpoint(endpoint string) (Link, error)
 	LinkExists(target string) bool
 	UpdateLink(oldEndpoint, newEndpoint, target string) error
+	CreateLink(link CreateLink) error
 	// SignUpUser(user User) error
 	Close() error
 }
