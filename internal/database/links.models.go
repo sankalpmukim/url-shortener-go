@@ -27,3 +27,8 @@ func (db *Database) CreateLink(link CreateLink) error {
 	_, err := db.conn.Exec("INSERT INTO links (endpoint, target, clicks, createdby, createdat, updatedat) VALUES ($1, $2, $3, $4, NOW(), NOW())", link.Endpoint, link.Target, 0, link.CreatedBy)
 	return err
 }
+
+func (db *Database) IncrementClicks(endpoint string) error {
+	_, err := db.conn.Exec("UPDATE links SET clicks=clicks+1, updatedat=NOW() WHERE endpoint=$1", endpoint)
+	return err
+}

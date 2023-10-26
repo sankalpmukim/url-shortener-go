@@ -80,6 +80,7 @@ func RedirectLink(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Link not found", http.StatusNotFound)
 		return
 	}
+	go database.DB.IncrementClicks(link.Endpoint)
 	http.Redirect(w, r, link.Target, http.StatusSeeOther)
 }
 

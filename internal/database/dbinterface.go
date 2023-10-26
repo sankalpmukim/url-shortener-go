@@ -13,6 +13,7 @@ type DBInterface interface {
 	LinkExists(target string) bool
 	UpdateLink(oldEndpoint, newEndpoint, target string) error
 	CreateLink(link CreateLink) error
+	IncrementClicks(endpoint string) error
 	// SignUpUser(user User) error
 	Close() error
 }
