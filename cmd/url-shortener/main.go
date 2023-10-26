@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
+	"github.com/sankalpmukim/url-shortener-go/internal/handlers"
 	i "github.com/sankalpmukim/url-shortener-go/internal/initialize"
 	"github.com/sankalpmukim/url-shortener-go/internal/middleware"
 	"github.com/sankalpmukim/url-shortener-go/internal/routes"
@@ -43,6 +44,8 @@ func main() {
 		r.Use(middleware.Authenticated)
 		r.Mount("/", routes.Links)
 	})
+
+	r.Get("/{endpoint}", handlers.RedirectLink)
 
 	// Listen on port 3000
 	PORT := os.Getenv("PORT")
