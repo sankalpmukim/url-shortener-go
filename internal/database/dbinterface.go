@@ -1,5 +1,7 @@
 package database
 
+import "github.com/google/uuid"
+
 type DBInterface interface {
 	// users
 	GetUsers() ([]User, error)
@@ -14,6 +16,8 @@ type DBInterface interface {
 	UpdateLink(oldEndpoint, newEndpoint, target string) error
 	CreateLink(link CreateLink) error
 	IncrementClicks(endpoint string) error
+	GetUserLinks(userID uuid.UUID) ([]Link, error)
+	UserLinkExists(userID uuid.UUID, endpoint string) bool
 	// SignUpUser(user User) error
 	Close() error
 }

@@ -1,5 +1,7 @@
 package database
 
+import "github.com/google/uuid"
+
 func (db *Database) GetLinks() ([]Link, error) {
 	var links []Link
 	err := db.conn.Select(&links, "SELECT * FROM links")
@@ -31,4 +33,16 @@ func (db *Database) CreateLink(link CreateLink) error {
 func (db *Database) IncrementClicks(endpoint string) error {
 	_, err := db.conn.Exec("UPDATE links SET clicks=clicks+1, updatedat=NOW() WHERE endpoint=$1", endpoint)
 	return err
+}
+
+func (db *Database) GetUserLinks(userID uuid.UUID) ([]Link, error) {
+	var links []Link
+	err := db.conn.Select(&links, "SELECT * FROM links WHERE createdby=$1", userID)
+	return links, err
+}
+
+func (db *Database) UserLinkExists(userID uuid.UUID, endpoint string) bool {
+	var link Link
+	err := db.conn.Get(&link, "SELECT * FROM links WHERE createdby=$1 AND endpoint=$2", userID, endpoint)
+	return err == nil
 }

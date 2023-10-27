@@ -31,7 +31,16 @@ func GetLinks(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to parse form(flash cookie)", http.StatusInternalServerError)
 		return
 	}
-	links, err := database.DB.GetLinks()
+	// check if the endpoint is made by the user
+	// get user from database
+	email := controllers.GetMailFromContext(r)
+	user, err := database.DB.GetUserByEmail(email)
+	if err != nil {
+		logs.Error("Failed to get user", err)
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
+		return
+	}
+	links, err := database.DB.GetUserLinks(user.ID)
 	if err != nil {
 		logs.Error("Error getting links", err)
 		w.Write([]byte("Error"))
@@ -96,6 +105,23 @@ func GetEditLink(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Endpoint not provided", http.StatusBadRequest)
 		return
 	}
+	// check if the endpoint is made by the user
+	// get user from database
+	email := controllers.GetMailFromContext(r)
+	user, err := database.DB.GetUserByEmail(email)
+	if err != nil {
+		logs.Error("Failed to get user", err)
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
+		return
+	}
+
+	// check if endpoint is in user's links
+	if !database.DB.UserLinkExists(user.ID, endpoint) {
+		// flash error message
+		cookies.CreateOrAppendFlash(w, r, cookies.ERROR, "Endpoint not found")
+		// redirect the user to the list links page
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
 	link, err := database.DB.GetLinkByEndpoint(endpoint)
 	if err != nil {
 		logs.Error("Error getting link", err)
@@ -143,7 +169,25 @@ func PostEditLink(w http.ResponseWriter, r *http.Request) {
 	endpoint := r.FormValue("endpoint")
 	target := r.FormValue("target")
 
-	err := database.DB.UpdateLink(oldEndpoint, endpoint, target)
+	// check if the endpoint is made by the user
+	// get user from database
+	email := controllers.GetMailFromContext(r)
+	user, err := database.DB.GetUserByEmail(email)
+	if err != nil {
+		logs.Error("Failed to get user", err)
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
+		return
+	}
+
+	// check if endpoint is in user's links
+	if !database.DB.UserLinkExists(user.ID, oldEndpoint) {
+		// flash error message
+		cookies.CreateOrAppendFlash(w, r, cookies.ERROR, "Endpoint not found")
+		// redirect the user to the list links page
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	err = database.DB.UpdateLink(oldEndpoint, endpoint, target)
 	if err != nil {
 		logs.Error("Failed to update link", err)
 		http.Error(w, "Failed to update link", http.StatusInternalServerError)
