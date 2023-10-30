@@ -37,7 +37,7 @@ func (db *Database) IncrementClicks(endpoint string) error {
 
 func (db *Database) GetUserLinks(userID uuid.UUID) ([]Link, error) {
 	var links []Link
-	err := db.conn.Select(&links, "SELECT * FROM links WHERE createdby=$1", userID)
+	err := db.conn.Select(&links, "SELECT * FROM links WHERE createdby=$1 ORDER BY endpoint", userID)
 	return links, err
 }
 
