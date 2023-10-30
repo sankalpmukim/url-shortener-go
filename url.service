@@ -3,10 +3,10 @@ Description=My Go API using chi
 After=network.target
 
 [Service]
-User=azureuser
-Group=azureuser
-WorkingDirectory=/home/azureuser/code/url-shortener-go
-ExecStart=/home/azureuser/code/url-shortener-go/main
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/code/url-shortener-go
+ExecStart=/home/ubuntu/code/url-shortener-go/main
 Restart=always
 Environment=ENV_VAR1=value1 ENV_VAR2=value2
 
