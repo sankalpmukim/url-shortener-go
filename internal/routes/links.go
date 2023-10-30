@@ -14,4 +14,5 @@ func init() {
 	Links.Post("/create", handlers.PostCreateLink)
 	Links.Get("/{endpoint}/edit", handlers.GetEditLink)
 	Links.Post("/{endpoint}/edit", handlers.PostEditLink)
+	Links.Get("/{endpoint}", handlers.RedirectLink)
 }
